@@ -1,11 +1,14 @@
 from datasets import load_dataset
 import nltk
 import string
+
+from envs.Main.Lib.warnings import deprecated
 from nltk.corpus import stopwords
 from sklearn.model_selection import train_test_split
 import numpy as np
 from collections import defaultdict
 
+#Download stopwords and punctuation
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
@@ -16,6 +19,7 @@ try:
 except LookupError:
     nltk.download('stopwords')
 
+#Get data
 def import_dataset(path):
     first_half = load_dataset(path, split = "train")
     second_half = load_dataset(path, split = "test")
@@ -23,6 +27,7 @@ def import_dataset(path):
     label = first_half["label"] + second_half['label']
     return text, label
 
+#Remove stopwords, punctuation and tokenize the text
 def preprocessing_data(texts, labels):
     stop_words = set(stopwords.words('english'))
     tokenized_sentences = []
@@ -34,11 +39,12 @@ def preprocessing_data(texts, labels):
     dataset = train_test_split(tokenized_sentences, labels, stratify = labels, test_size=0.25)
     return dataset
 
+@deprecated
 def preprocessing_texts(texts):
     stop_words = set(stopwords.words('english'))
 
     tokenized_sentences = []
-    for sentence in texts:
+    for text in texts:
         text = text.lower()
         tokens = nltk.tokenize.word_tokenize(text)
         tokens = [token for token in tokens if token not in stop_words and token not in string.punctuation]
@@ -67,6 +73,7 @@ class NaiveBayesModel:
             tokens = train[i]
             label = labels[i]
 
+        #Count the positive word and negative word
             if label == 1:
                 for token in tokens:
                     self.vocab.add(token)
@@ -84,6 +91,7 @@ class NaiveBayesModel:
                     self.total_neg += 1
 
 
+
     def predict(self, texts):
         preds = []
         if type(texts[0]) == str:
@@ -91,6 +99,7 @@ class NaiveBayesModel:
         else:
             tokenized_sentences = texts
 
+        #Get the log-probabilities of the sentence using laplacian smoothing
         for tokens in tokenized_sentences:
             log_pos_probs = 0
             log_neg_probs = 0
@@ -108,6 +117,7 @@ class NaiveBayesModel:
 
         return preds
 
+#Metrics
 def accuracy(preds, true):
     preds = np.array(preds)
     true = np.array(true)
