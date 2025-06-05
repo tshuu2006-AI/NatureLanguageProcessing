@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0927e3c5-43ad-4868-8bec-04ce6487a710" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NamedEntityRecognition/LSTM_based.py" beforeDir="false" afterPath="$PROJECT_DIR$/NamedEntityRecognition/LSTM_based.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

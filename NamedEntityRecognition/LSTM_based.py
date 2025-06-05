@@ -59,7 +59,7 @@ class LstmModel:
         self.model = tf.keras.Sequential(name = "ner_model")
         self.model.add(tf.keras.layers.Embedding(input_dim = vocab_size + 1, output_dim = embedding_size, mask_zero = True))
         if bidirectional:
-            self.model.add(tf.keras.layersBidirectional(tf.keras.layers.LSTM(units = embedding_size, return_sequences = True)))
+            self.model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(units = embedding_size, return_sequences = True)))
         else:
             self.model.add(tf.keras.layers.LSTM(units = embedding_size, return_sequences = True))
         self.model.add(tf.keras.layers.Dense(units = num_tags))
@@ -78,12 +78,10 @@ class LstmModel:
         return y_pred
 
     def accuracy(self, y_true, y_pred):
-        if y_pred.shape != y_true.shape:
-            raise ValueError("Incorresponding dimension")
         y_true = tf.cast(y_true, tf.float32)
         y_pred = tf.math.argmax(y_pred, axis=-1)
         y_pred = tf.cast(y_pred, y_true.dtype)
-        mask = tf.keras.not_equal(y_true, -1)
+        mask = tf.math.not_equal(y_true, -1)
         mask = tf.cast(mask, y_true.dtype)
 
         y_pred_class = y_pred * mask
@@ -103,9 +101,9 @@ if __name__ == "__main__":
     lstm.compile()
     lstm.fit(x_train, y_train, x_valid, y_valid)
     y_preds1 = lstm.predict(x_test)
-    print(lstm.accuracy(y_preds1, y_test))
+    print(lstm.accuracy(y_test, y_preds1))
     biLSTM = LstmModel(num_tags=len(tags), bidirectional=True, text_vectorizer=vectorizer)
     biLSTM.compile()
     biLSTM.fit(x_train, y_train, x_valid, y_valid)
     y_preds1 = biLSTM.predict(x_test)
-    print(biLSTM.accuracy(y_preds1, y_test))
+    print(biLSTM.accuracy(y_test, y_preds1))
